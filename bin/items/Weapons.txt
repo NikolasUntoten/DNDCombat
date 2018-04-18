@@ -1,0 +1,5 @@
+Format: <name>|<value(copper)>|<weight(lbs)>|<range>|<rolls>|<sides>|<Property1 Property2 Property3...>			Properties include: ammunition, finesse, heavy, light, loading, range, reach, special, thrown, two-handed, versatile, improvised, silvered
+Club|10|2|2|1|4|light
+Dagger|200|1|1|1|4|finesse light thrown
+Mace|500|4|2|1|6
+Spear|100|3|3|1|6|thrown versatile
