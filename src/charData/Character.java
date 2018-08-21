@@ -25,12 +25,15 @@ import charData.items.Weapon;
 import charData.magic.Spell;
 import world.locations.Arena;
 
-public class Character implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1991909017162727805L;
+/* Created by Nikolas Gaub
+ * This class is meant to act as a bridge between the character sheet and the world.
+ * The functions contained in this class have to main purposes: storing and using the
+ * character data, and communicating with the user about
+ */
+
+public abstract class Character implements Serializable {
 	
+	private static final long serialVersionUID = 1991909017162727805L;
 	
 	public CharacterData data;
 	public int x;
@@ -54,6 +57,11 @@ public class Character implements Serializable {
 		y = (int) (Math.random() * 10);
 		
 	}
+	
+	public abstract AbstractAction getNextAction(Arena field, Queue<Character> others, int moveDist, int actions,
+			int bonusActions, int interactions);
+	
+	public abstract Character[] getTargets(Arena field, int max);
 
 	public void setStats(int str, int dex, int con, int intl, int wis, int cha, int speed, CharacterData.Class clss,
 			CharacterData.Race race, CharacterData.Align align, CharacterData.Style style, String name) {
@@ -70,85 +78,6 @@ public class Character implements Serializable {
 	
 	public void setStats(CharacterData initData) {
 		data = initData;
-	}
-
-	public AbstractAction getNextAction(Arena field, Queue<Character> others, int moveDist, int actions, int bonusActions,
-			int interactions) {
-		Map<Translator.Actions, Boolean> available = new HashMap<Translator.Actions, Boolean>();
-		available.put(Translator.Actions.ATTACK, actions > 0);
-		available.put(Translator.Actions.MOVE, moveDist > 0);
-		available.put(Translator.Actions.DRAW, interactions > 0);
-		available.put(Translator.Actions.CAST, data.magic.getSpells().length > 0); //add cast time check?
-
-		if (npc) {
-			Character enemy = others.peek();
-			if (enemy.distance(this) > this.getReach() && moveDist > 0) {
-				int deltaX = enemy.getX() - getX();
-				int deltaY = enemy.getY() - getY();
-				return new Move(field, this, moveDist, "move by " + deltaX + " " + deltaY);
-			}
-			if (actions > 0) {
-				return new Attack(this, others.peek());
-			} else {
-				return new PassTurn();
-			}
-		} else {
-			if (available.get(Translator.Actions.ATTACK))
-				Client.display.addChoice("Attack", "attack");
-
-			if (available.get(Translator.Actions.MOVE))
-				Client.display.addChoice("Move", "move");
-
-			if (available.get(Translator.Actions.DRAW))
-				Client.display.addChoice("Draw", "draw");
-			
-			if (available.get(Translator.Actions.CAST))
-				Client.display.addChoice("Cast Spell", "cast");
-
-			Client.display.addChoice("End Turn", "end turn");
-
-			String input = Client.console.read();
-
-			Translator.Actions choice = Translator.toAction(input);
-			Client.display.clearChoices();
-
-			switch (choice) {
-			case ATTACK:
-				if (!available.get(Translator.Actions.ATTACK)) {
-					Client.console.log("No more actions available!");
-					return null;
-				}
-				return new Attack(this, others.peek());
-			case MOVE:
-				if (!available.get(Translator.Actions.MOVE)) {
-					Client.console.log("No more movement allowed!");
-					return null;
-				}
-				return new Move(field, this, moveDist, input);
-			case END_TURN:
-				return new PassTurn();
-			case DRAW:
-				return new Draw(this);
-			case CAST:
-				return new Cast(this, field);
-			default:
-				return null;
-			}
-		}
-	}
-	
-	public Character[] getTargets(Arena field, int max) {
-		Character[] targets = new Character[max];
-		List<Character> people = field.getPeople();
-		for (int i = 0; i < people.size(); i++) {
-			Client.console.log(i+1 + ": " + people.get(i), Client.DM_COLOR);
-		}
-		for (int i = 0; i < max; i++) {
-			Client.console.log("Who would you like your next target to be?");
-			int n = Client.console.readNum();
-			targets[i] = people.get(n - 1);
-		}
-		return targets;
 	}
 	
 	public Spell[] getSpells() {

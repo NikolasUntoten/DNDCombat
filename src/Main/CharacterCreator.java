@@ -2,6 +2,7 @@ package Main;
 
 import charData.Character;
 import charData.CharacterData;
+import charData.Player;
 import charData.magic.Spell;
 import charData.magic.mageSpells.MagicMissile;
 
@@ -9,7 +10,7 @@ public class CharacterCreator {
 
 	public static Character create() {
 		CharacterData cd = new CharacterData();
-		Character c = new Character();
+		Character c = new Player();
 
 		Client.console.log("Would you like to create your own character?", Client.DM_COLOR);
 		if (!Client.console.readBoolean()) {
@@ -51,7 +52,7 @@ public class CharacterCreator {
 
 	// returns a default character for you lazy people (me)
 	public static Character defaultChar(boolean npc) {
-		Character c = new Character();
+		Character c = new Player();
 		c.setStats(12, 15, 10, 11, 13, 11, 30, CharacterData.Class.FIGHTER, CharacterData.Race.HUMAN, CharacterData.Align.NEUTRAL, CharacterData.Style.NEUTRAL,
 				generateName());
 		c.setNPC(npc);
