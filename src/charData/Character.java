@@ -25,10 +25,15 @@ import charData.items.Weapon;
 import charData.magic.Spell;
 import world.locations.Arena;
 
+/* Created by Nikolas Gaub
+ * 
+ * Instances of this class store all data related to a character
+ * Think of this class like a character sheet in code.
+ */
+
 public class Character implements Serializable {
-	/**
-	 * 
-	 */
+	
+	//Character must be serializable to save data.
 	private static final long serialVersionUID = 1991909017162727805L;
 	
 	
