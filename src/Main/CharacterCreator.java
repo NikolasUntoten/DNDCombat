@@ -1,7 +1,7 @@
 package Main;
 
 import charData.Character;
-import charData.Stats;
+import charData.CharacterData;
 import charData.magic.Spell;
 import charData.magic.mageSpells.MagicMissile;
 
@@ -22,15 +22,15 @@ public class CharacterCreator {
 		Client.console.log("Now we can start making your character. What will your stats be?", Client.DM_COLOR);
 		int[] statList = getStats();
 		
-		Stats.Race race = askRace();
-		Stats.Class clss = askClass();
+		CharacterData.Race race = askRace();
+		CharacterData.Class clss = askClass();
 		
-		if (clss == Stats.Class.WIZARD) {
+		if (clss == CharacterData.Class.WIZARD) {
 			c.learnSpell(findCantrip(c));
 		}
 
 		c.setStats(statList[0], statList[1], statList[2], statList[3], statList[4], statList[5], 30, clss, race,
-				Stats.Align.NEUTRAL, Stats.Style.NEUTRAL, name);
+				CharacterData.Align.NEUTRAL, CharacterData.Style.NEUTRAL, name);
 		c.setNPC(false);
 		c.addCopper(1000);
 		return c;
@@ -39,7 +39,7 @@ public class CharacterCreator {
 	// returns a default character for you lazy people (me)
 	public static Character defaultChar(boolean npc) {
 		Character c = new Character();
-		c.setStats(12, 15, 10, 11, 13, 11, 30, Stats.Class.FIGHTER, Stats.Race.HUMAN, Stats.Align.NEUTRAL, Stats.Style.NEUTRAL,
+		c.setStats(12, 15, 10, 11, 13, 11, 30, CharacterData.Class.FIGHTER, CharacterData.Race.HUMAN, CharacterData.Align.NEUTRAL, CharacterData.Style.NEUTRAL,
 				generateName());
 		c.setNPC(npc);
 		c.addCopper(300);
@@ -91,11 +91,11 @@ public class CharacterCreator {
 	}
 	
 	//get the user's preferred race
-	private static Stats.Race askRace() {
-		Stats.Race[] races = {Stats.Race.DWARF, Stats.Race.ELF, 
-				Stats.Race.HALFLING, Stats.Race.HUMAN, Stats.Race.DRAGONBORN,
-				 Stats.Race.GNOME, Stats.Race.HALF_ELF, Stats.Race.HALF_ORC,
-				 Stats.Race.TEIFLING};
+	private static CharacterData.Race askRace() {
+		CharacterData.Race[] races = {CharacterData.Race.DWARF, CharacterData.Race.ELF, 
+				CharacterData.Race.HALFLING, CharacterData.Race.HUMAN, CharacterData.Race.DRAGONBORN,
+				 CharacterData.Race.GNOME, CharacterData.Race.HALF_ELF, CharacterData.Race.HALF_ORC,
+				 CharacterData.Race.TEIFLING};
 		
 		Client.console.log("What race would you like your character to be?", Client.DM_COLOR);
 		for (int i = 0; i < races.length; i++) {
@@ -104,18 +104,18 @@ public class CharacterCreator {
 		
 		int index = Client.console.readNum();
 		index--;
-		if (index < 0 || index >= races.length) return Stats.Race.HUMAN;
+		if (index < 0 || index >= races.length) return CharacterData.Race.HUMAN;
 		
 		return races[index];
 	}
 	
 	//get the user's preferred class
-	private static Stats.Class askClass() {
-		Stats.Class[] classes = {Stats.Class.BARBARIAN, Stats.Class.BARD,
-				Stats.Class.CLERIC, Stats.Class.DRUID, Stats.Class.FIGHTER,
-				Stats.Class.MONK, Stats.Class.PALADIN, Stats.Class.RANGER,
-				Stats.Class.ROGUE, Stats.Class.SORCERER, Stats.Class.WARLOCK,
-				Stats.Class.WIZARD};
+	private static CharacterData.Class askClass() {
+		CharacterData.Class[] classes = {CharacterData.Class.BARBARIAN, CharacterData.Class.BARD,
+				CharacterData.Class.CLERIC, CharacterData.Class.DRUID, CharacterData.Class.FIGHTER,
+				CharacterData.Class.MONK, CharacterData.Class.PALADIN, CharacterData.Class.RANGER,
+				CharacterData.Class.ROGUE, CharacterData.Class.SORCERER, CharacterData.Class.WARLOCK,
+				CharacterData.Class.WIZARD};
 		
 		Client.console.log("What class would you like your character to be?", Client.DM_COLOR);
 		for (int i = 0; i < classes.length; i++) {
@@ -124,7 +124,7 @@ public class CharacterCreator {
 		
 		int index = Client.console.readNum();
 		index--;
-		if (index < 0 || index >= classes.length) return Stats.Class.FIGHTER;
+		if (index < 0 || index >= classes.length) return CharacterData.Class.FIGHTER;
 		
 		return classes[index];
 	}

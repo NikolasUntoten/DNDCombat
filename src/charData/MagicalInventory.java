@@ -47,7 +47,7 @@ public class MagicalInventory implements Serializable {
 		return false;
 	}
 	
-	public void setSpellSlots(Stats.Race race, Stats.Class clss, int level) {
+	public void setSpellSlots(CharacterData.Race race, CharacterData.Class clss, int level) {
 		
 		//set spell slots here
 		

@@ -18,7 +18,7 @@ import actions.Cast;
 import actions.Draw;
 import actions.Move;
 import actions.PassTurn;
-import charData.Stats.CreatureSize;
+import charData.CharacterData.CreatureSize;
 import charData.items.Fists;
 import charData.items.Item;
 import charData.items.Weapon;
@@ -32,41 +32,31 @@ public class Character implements Serializable {
 	private static final long serialVersionUID = 1991909017162727805L;
 	
 	
-	private Stats stats;
-	private int x;
-	private int y;
-	private Weapon weapon;
-	public Inventory inventory;
-	public MagicalInventory magic;
-	private boolean unconcious;
-	private double initiative;
-	private int copper;
+	public CharacterData data;
+	public int x;
+	public int y;
 
 	private boolean npc;
 
 	public Character() {
 		x = (int) (Math.random() * 10);
 		y = (int) (Math.random() * 10);
-		stats = new Stats();
-		weapon = new Fists();
-		unconcious = false;
+		data = new CharacterData();
+		
 		npc = true;
-		inventory = new Inventory(150);
-		magic = new MagicalInventory();
-		copper = 0;
 	}
 
-	public void setStats(int str, int dex, int con, int intl, int wis, int cha, int speed, Stats.Class clss,
-			Stats.Race race, Stats.Align align, Stats.Style style, String name) {
-		stats.setBasic(str, dex, con, intl, wis, cha);
-		stats.setHealth(8 + modifier(stats.con));
-		stats.name = name;
-		stats.race = race;
-		stats.clss = clss;
-		stats.alignment = align;
-		stats.style = style;
+	public void setStats(int str, int dex, int con, int intl, int wis, int cha, int speed, CharacterData.Class clss,
+			CharacterData.Race race, CharacterData.Align align, CharacterData.Style style, String name) {
+		data.setBasic(str, dex, con, intl, wis, cha);
+		data.setHealth(8 + modifier(data.con));
+		data.name = name;
+		data.race = race;
+		data.clss = clss;
+		data.alignment = align;
+		data.style = style;
 
-		stats.AC = 10 + (int) Math.round((stats.dex - 10) / 2.0);
+		data.AC = 10 + (int) Math.round((data.dex - 10) / 2.0);
 	}
 
 	public AbstractAction getNextAction(Arena field, Queue<Character> others, int moveDist, int actions, int bonusActions,
@@ -75,7 +65,7 @@ public class Character implements Serializable {
 		available.put(Translator.Actions.ATTACK, actions > 0);
 		available.put(Translator.Actions.MOVE, moveDist > 0);
 		available.put(Translator.Actions.DRAW, interactions > 0);
-		available.put(Translator.Actions.CAST, magic.getSpells().length > 0); //add cast time check?
+		available.put(Translator.Actions.CAST, data.magic.getSpells().length > 0); //add cast time check?
 
 		if (npc) {
 			Character enemy = others.peek();
@@ -149,7 +139,7 @@ public class Character implements Serializable {
 	}
 	
 	public Spell[] getSpells() {
-		return magic.getSpells();
+		return data.magic.getSpells();
 	}
 	
 	private final String[] acts = {};
@@ -172,35 +162,36 @@ public class Character implements Serializable {
 	}
 	
 	public void learnSpell(Spell s) {
-		magic.learnSpell(s);
+		data.magic.learnSpell(s);
 	}
 
 	public void draw(Weapon e) {
 		if (e instanceof Fists) {
 			dequip();
-		} else if (inventory.contains(e)) {
+		} else if (data.inventory.contains(e)) {
 			dequip();
-			weapon = e;
+			data.drawnWeapon = e;
 		} else {
 			Client.console.log("You must first put this item into your inventory!", Client.DM_COLOR);
 		}
 	}
 
 	public void dequip() {
-		if (weapon instanceof Fists) {
+		if (data.drawnWeapon instanceof Fists) {
 			// Client.console.log("No Weapon equipped!", Client.DM_COLOR);
 			return;
 		}
-		boolean success = inventory.add(weapon);
+		boolean success = data.inventory.add(data.drawnWeapon);
+		
 		if (success) {
-			weapon = new Fists();
+			data.drawnWeapon = new Fists();
 		} else {
 			Client.console.log("Inventory full, Cannot dequip weapon!", Client.DM_COLOR);
 		}
 	}
 
 	public boolean stow(Item e) {
-		boolean success = inventory.add(e);
+		boolean success = data.inventory.add(e);
 		if (success) {
 			Client.console.log(e + " has been added to your inventory.", Client.DM_COLOR);
 		} else {
@@ -210,11 +201,11 @@ public class Character implements Serializable {
 	}
 
 	public boolean canStow(Item e) {
-		return inventory.hasSpaceFor(e.getWeight());
+		return data.inventory.hasSpaceFor(e.getWeight());
 	}
 
 	public void drop(Item e) {
-		boolean success = inventory.remove(e);
+		boolean success = data.inventory.remove(e);
 		if (success) {
 			Client.console.log("Dropped " + e + " from inventory.", Client.DM_COLOR);
 		}
@@ -222,42 +213,44 @@ public class Character implements Serializable {
 
 	public ArrayList<Weapon> getWeapons() {
 		ArrayList<Weapon> weapons = new ArrayList<Weapon>();
-		for (int i = 0; i < inventory.size(); i++) {
-			if (inventory.get(i) instanceof Weapon) {
-				weapons.add((Weapon) inventory.get(i));
+		for (int i = 0; i < data.inventory.size(); i++) {
+			if (data.inventory.get(i) instanceof Weapon) {
+				weapons.add((Weapon) data.inventory.get(i));
 			}
 		}
 		return weapons;
 	}
 
 	public int getCopper() {
-		return copper;
+		return data.copper;
 	}
 
 	public void addCopper(int c) {
 		if (c < 0)
 			return;
-		copper += c;
+		data.copper += c;
 	}
 
-	public void useCopper(int c) {
+	public boolean useCopper(int c) {
 		if (c < 0)
-			return;
-		if (c > copper) {
+			return false;
+		if (c > data.copper) {
 			Client.console.log("You do not have enough money for this transaction.", Client.DM_COLOR);
+			return false;
 		}
-		copper -= c;
+		data.copper -= c;
+		return true;
 	}
 
 	public boolean attackCheck(int threshold) {
-		int mod = modifier(stats.str);
+		int mod = modifier(data.str);
 		boolean advantage = false;
 		boolean disadvantage = false;
-		if (weapon.hasProperty(Weapon.Property.FINESSE)) {
+		if (data.drawnWeapon.hasProperty(Weapon.Property.FINESSE)) {
 			mod = finesse();
 		}
 		
-		if (this.creatureSize() == CreatureSize.SMALL && weapon.hasProperty(Weapon.Property.HEAVY)) {
+		if (this.creatureSize() == CreatureSize.SMALL && data.drawnWeapon.hasProperty(Weapon.Property.HEAVY)) {
 			disadvantage = true;
 		}
 		
@@ -293,43 +286,43 @@ public class Character implements Serializable {
 	
 	private int finesse() {
 		Client.console.log("Which modifier would you like to use?", Client.DM_COLOR);
-		Client.console.log("#1: Strength (" + stats.str + ")");
-		Client.console.log("#2: Dexterity (" + stats.dex + ")");
+		Client.console.log("#1: Strength (" + data.str + ")");
+		Client.console.log("#2: Dexterity (" + data.dex + ")");
 		int answer = Client.console.readNum();
 		if (answer == 1) {
-			return modifier(stats.str);
+			return modifier(data.str);
 		} else if (answer == 2) {
-			return modifier(stats.dex);
+			return modifier(data.dex);
 		}
-		return modifier(stats.str);
+		return modifier(data.str);
 	}
 
 	public boolean strCheck(int threshold) {
-		return roll20() + modifier(stats.str) >= threshold;
+		return roll20() + modifier(data.str) >= threshold;
 	}
 
 	public boolean dexCheck(int threshold) {
-		return roll20() + modifier(stats.dex) >= threshold;
+		return roll20() + modifier(data.dex) >= threshold;
 	}
 
 	public boolean conCheck(int threshold) {
-		return roll20() + modifier(stats.con) >= threshold;
+		return roll20() + modifier(data.con) >= threshold;
 	}
 
 	public boolean intlCheck(int threshold) {
-		return roll20() + modifier(stats.intl) >= threshold;
+		return roll20() + modifier(data.intl) >= threshold;
 	}
 
 	public boolean wisCheck(int threshold) {
-		return roll20() + modifier(stats.wis) >= threshold;
+		return roll20() + modifier(data.wis) >= threshold;
 	}
 
 	public boolean chaCheck(int threshold) {
-		return roll20() + modifier(stats.cha) >= threshold;
+		return roll20() + modifier(data.cha) >= threshold;
 	}
 
 	public void setWeapon(Weapon e) {
-		weapon = e;
+		data.drawnWeapon = e;
 	}
 
 	public void setNPC(boolean isNPC) {
@@ -345,7 +338,7 @@ public class Character implements Serializable {
 	}
 
 	public int getSpeed() {
-		return stats.speed;
+		return data.speed;
 	}
 
 	public int getBonusActions() {
@@ -353,11 +346,11 @@ public class Character implements Serializable {
 	}
 
 	public void rollInitiative() {
-		initiative = Math.random();
+		data.initiative = (int) (Math.random()*20);
 	}
 
 	public double getInitiative() {
-		return initiative;
+		return data.initiative;
 	}
 
 	public int getX() {
@@ -374,36 +367,36 @@ public class Character implements Serializable {
 	}
 
 	public int getAC() {
-		return stats.AC;
+		return data.AC;
 	}
 
 	public int getDamage() {
-		return weapon.getDamage();
+		return data.drawnWeapon.getDamage();
 	}
 
 	public void damage(int damage) {
-		stats.hitpoints -= damage;
-		if (stats.hitpoints <= 0) {
+		data.hitpoints -= damage;
+		if (data.hitpoints <= 0) {
 			Client.console.log(this.toString() + " has become unconcious.");
-			unconcious = true;
+			data.unconcious = true;
 		}
 	}
 
 	// <GENJI>: "I NEED HEALING"
 	public void heal(int healing) {
-		if (stats.hitpoints + healing > stats.getMaxHitpoints()) {
-			stats.hitpoints = stats.getMaxHitpoints();
+		if (data.hitpoints + healing > data.getMaxHitpoints()) {
+			data.hitpoints = data.getMaxHitpoints();
 		} else {
-			stats.hitpoints += healing;
+			data.hitpoints += healing;
 			if (isUnconcious()) {
-				unconcious = false;
+				data.unconcious = false;
 			}
 		}
 	}
 
 	public void fullHeal() {
-		stats.hitpoints = stats.getMaxHitpoints();
-		unconcious = false;
+		data.hitpoints = data.getMaxHitpoints();
+		data.unconcious = false;
 	}
 
 	public int modifier(int input) {
@@ -411,7 +404,7 @@ public class Character implements Serializable {
 	}
 
 	public String toString() {
-		return stats.name;
+		return data.name;
 	}
 
 	public String toShortString() {
@@ -426,20 +419,20 @@ public class Character implements Serializable {
 		g.fillRect(0, 0, 400, 400);
 
 		g.setColor(Color.BLACK);
-		g.drawString("Name: " + stats.name, 10, y);
+		g.drawString("Name: " + data.name, 10, y);
 		y += 20;
-		g.drawString("HP: " + stats.hitpoints + " / " + stats.getMaxHitpoints(), 10, y);
+		g.drawString("HP: " + data.hitpoints + " / " + data.getMaxHitpoints(), 10, y);
 		y += 20;
-		g.drawString("Current Weapon: " + weapon, 10, y);
+		g.drawString("Current Weapon: " + data.drawnWeapon, 10, y);
 		y += 20;
-		g.drawString("Unconcious: " + unconcious, 10, y);
+		g.drawString("Unconcious: " + data.unconcious, 10, y);
 		y += 20;
-		g.drawString("Copper: " + copper, 10, y);
+		g.drawString("Copper: " + data.copper, 10, y);
 		return image;
 	}
 
 	public boolean isUnconcious() {
-		return unconcious;
+		return data.unconcious;
 	}
 
 	private int roll20() {
@@ -447,7 +440,7 @@ public class Character implements Serializable {
 	}
 
 	public double getReach() {
-		return weapon.reach;
+		return data.drawnWeapon.reach;
 	}
 
 	public double distance(Character other) {

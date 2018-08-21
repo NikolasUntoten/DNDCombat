@@ -52,12 +52,12 @@ public abstract class Spell implements Serializable {
 			cast(field);
 			return;
 		}
-		if (caster.magic.getRemainingSlots(castLevel) < 0) {
+		if (caster.data.magic.getRemainingSlots(castLevel) < 0) {
 			Client.console.log("You have no spell slots available at that level!");
 			cast(field);
 			return;
 		}
-		caster.magic.useSpellSlot(castLevel);
+		caster.data.magic.useSpellSlot(castLevel);
 		cast(field, castLevel);
 	}
 }
