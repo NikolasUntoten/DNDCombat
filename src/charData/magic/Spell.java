@@ -10,7 +10,6 @@ import charData.Character;
 
 public abstract class Spell implements Serializable {
 	
-	protected static Character caster;
 	protected static int level;
 	protected static CastingTime castingTime;
 	protected static int longCastTime; //only used if spell is LONG_CAST CastingTime
@@ -21,6 +20,8 @@ public abstract class Spell implements Serializable {
 	protected static boolean verbal;
 	protected static boolean somatic;
 	protected static Item[] materials;
+	
+	protected Character caster;
 	
 	public enum CastingTime {
 		ACTION, REACTION, BONUS, LONG_CAST

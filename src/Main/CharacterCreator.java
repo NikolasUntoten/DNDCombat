@@ -8,6 +8,7 @@ import charData.magic.mageSpells.MagicMissile;
 public class CharacterCreator {
 
 	public static Character create() {
+		CharacterData cd = new CharacterData();
 		Character c = new Character();
 
 		Client.console.log("Would you like to create your own character?", Client.DM_COLOR);
@@ -28,9 +29,21 @@ public class CharacterCreator {
 		if (clss == CharacterData.Class.WIZARD) {
 			c.learnSpell(findCantrip(c));
 		}
-
-		c.setStats(statList[0], statList[1], statList[2], statList[3], statList[4], statList[5], 30, clss, race,
-				CharacterData.Align.NEUTRAL, CharacterData.Style.NEUTRAL, name);
+		cd.str = statList[0];
+		cd.dex = statList[1];
+		cd.con = statList[2];
+		cd.intl = statList[3];
+		cd.wis = statList[4];
+		cd.cha = statList[5];
+		
+		cd.speed = 30;
+		cd.clss = clss;
+		cd.race = race;
+		cd.alignment = CharacterData.Align.NEUTRAL;
+		cd.style = CharacterData.Style.NEUTRAL;
+		cd.name = name;
+		
+		c.setStats(cd);
 		c.setNPC(false);
 		c.addCopper(1000);
 		return c;
@@ -129,10 +142,11 @@ public class CharacterCreator {
 		return classes[index];
 	}
 	
+	//TODO fix this
 	private static Spell findCantrip(Character c) {
 		Client.console.log("What would you like your cantrip to be?", Client.DM_COLOR);
 		String input = Client.console.read();
-		Client.console.log("fuk u u get a magic missile ya nerd!");
+		Client.console.log("fuk u, u get a magic missile ya nerd!");
 		return new MagicMissile(c, 0, "Shooty McMagicMissile");
 	}
 
