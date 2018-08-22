@@ -153,4 +153,8 @@ public class Client {
 		Client.console.log("You rolled a " + result + "!", COMPUTER_COLOR);
 		return result;
 	}
+	
+	public static int roll(int num) {
+		return roll(num, false);
+	}
 }

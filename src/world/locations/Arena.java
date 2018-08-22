@@ -17,6 +17,7 @@ import actions.Draw;
 import actions.Move;
 import actions.PassTurn;
 import charData.Character;
+import charData.NPC;
 import charData.items.Weapon;
 import world.Location;
 import world.World;
