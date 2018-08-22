@@ -17,6 +17,7 @@ import actions.Draw;
 import actions.Move;
 import actions.PassTurn;
 import charData.Character;
+import charData.NPC;
 import charData.items.Weapon;
 import world.Location;
 import world.World;
@@ -120,7 +121,7 @@ public class Arena implements Location {
 		}
 		while (battleQueue.size() > 1) {
 			Character current = battleQueue.poll();
-			Client.console.log("Beginning turn for: " + current + " (NPC:" + current.isNPC() + ").", Client.DM_COLOR);
+			Client.console.log("Beginning turn for: " + current + " (NPC:" + (current instanceof NPC) + ").", Client.DM_COLOR);
 			takeTurn(current);
 			battleQueue.add(current);
 		}

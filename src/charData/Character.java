@@ -5,19 +5,10 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
-import GUI.Translator;
 import Main.Client;
 import actions.AbstractAction;
-import actions.Attack;
-import actions.Cast;
-import actions.Draw;
-import actions.Move;
-import actions.PassTurn;
 import charData.CharacterData.CreatureSize;
 import charData.items.Fists;
 import charData.items.Item;
@@ -39,19 +30,14 @@ public abstract class Character implements Serializable {
 	public int x;
 	public int y;
 
-	private boolean npc;
-
 	public Character() {
 		x = (int) (Math.random() * 10);
 		y = (int) (Math.random() * 10);
 		data = new CharacterData();
-		
-		npc = true;
 	}
 	
-	public Character(CharacterData initData, boolean npc) {
+	public Character(CharacterData initData) {
 		data = initData;
-		this.npc = npc;
 		
 		x = (int) (Math.random() * 10);
 		y = (int) (Math.random() * 10);
@@ -198,7 +184,7 @@ public abstract class Character implements Serializable {
 		
 		//make the roll
 		if (advantage == disadvantage) { //both true or both false
-			return roll20() + mod >= threshold;
+			return Client.roll(20) + mod >= threshold;
 			
 		} else if(advantage) { //roll with advantage
 			return advantageCheck(threshold, mod);
@@ -214,15 +200,15 @@ public abstract class Character implements Serializable {
 	
 	public boolean disadvantageCheck(int threshold, int mod) {
 		Client.console.log("Rolling with disadvantage.", Client.COMPUTER_COLOR);
-		boolean roll1 = roll20() + mod >= threshold;
-		boolean roll2 = roll20() + mod >= threshold;
+		boolean roll1 = Client.roll(20) + mod >= threshold;
+		boolean roll2 = Client.roll(20) + mod >= threshold;
 		return roll1 && roll2;
 	}
 	
 	public boolean advantageCheck(int threshold, int mod) {
 		Client.console.log("Rolling with advantage!", Client.COMPUTER_COLOR);
-		boolean roll1 = roll20() + mod >= threshold;
-		boolean roll2 = roll20() + mod >= threshold;
+		boolean roll1 = Client.roll(20) + mod >= threshold;
+		boolean roll2 = Client.roll(20) + mod >= threshold;
 		return roll1 || roll2;
 	}
 	
@@ -240,39 +226,31 @@ public abstract class Character implements Serializable {
 	}
 
 	public boolean strCheck(int threshold) {
-		return roll20() + modifier(data.str) >= threshold;
+		return Client.roll(20) + modifier(data.str) >= threshold;
 	}
 
 	public boolean dexCheck(int threshold) {
-		return roll20() + modifier(data.dex) >= threshold;
+		return Client.roll(20) + modifier(data.dex) >= threshold;
 	}
 
 	public boolean conCheck(int threshold) {
-		return roll20() + modifier(data.con) >= threshold;
+		return Client.roll(20) + modifier(data.con) >= threshold;
 	}
 
 	public boolean intlCheck(int threshold) {
-		return roll20() + modifier(data.intl) >= threshold;
+		return Client.roll(20) + modifier(data.intl) >= threshold;
 	}
 
 	public boolean wisCheck(int threshold) {
-		return roll20() + modifier(data.wis) >= threshold;
+		return Client.roll(20) + modifier(data.wis) >= threshold;
 	}
 
 	public boolean chaCheck(int threshold) {
-		return roll20() + modifier(data.cha) >= threshold;
+		return Client.roll(20) + modifier(data.cha) >= threshold;
 	}
 
 	public void setWeapon(Weapon e) {
 		data.drawnWeapon = e;
-	}
-
-	public void setNPC(boolean isNPC) {
-		npc = isNPC;
-	}
-
-	public boolean isNPC() {
-		return npc;
 	}
 
 	public int getActions() {
@@ -377,10 +355,6 @@ public abstract class Character implements Serializable {
 		return data.unconcious;
 	}
 
-	private int roll20() {
-		return Client.roll(20, npc);
-	}
-
 	public double getReach() {
 		return data.drawnWeapon.reach;
 	}
@@ -392,7 +366,7 @@ public abstract class Character implements Serializable {
 	}
 
 	public Color getColor() {
-		if (npc)
+		if (this instanceof NPC)
 			return Color.DARK_GRAY;
 		return Color.BLUE;
 	}

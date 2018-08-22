@@ -45,7 +45,6 @@ public class CharacterCreator {
 		cd.name = name;
 		
 		c.setStats(cd);
-		c.setNPC(false);
 		c.addCopper(1000);
 		return c;
 	}
@@ -55,7 +54,6 @@ public class CharacterCreator {
 		Character c = new Player();
 		c.setStats(12, 15, 10, 11, 13, 11, 30, CharacterData.Class.FIGHTER, CharacterData.Race.HUMAN, CharacterData.Align.NEUTRAL, CharacterData.Style.NEUTRAL,
 				generateName());
-		c.setNPC(npc);
 		c.addCopper(300);
 		return c;
 	}
