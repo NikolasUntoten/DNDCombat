@@ -3,6 +3,7 @@ package actions;
 import java.awt.Image;
 
 import Main.Client;
+import Main.Encounter;
 import charData.magic.Spell;
 import world.locations.Arena;
 import charData.Character;
@@ -10,9 +11,9 @@ import charData.Character;
 public class Cast implements AbstractAction {
 	
 	private Character caster;
-	private Arena field;
+	private Encounter field;
 	
-	public Cast(Character c, Arena f) {
+	public Cast(Character c, Encounter f) {
 		caster = c;
 		this.field = f;
 	}

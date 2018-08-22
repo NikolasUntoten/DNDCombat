@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 import Main.Client;
+import Main.Encounter;
 import actions.AbstractAction;
 import charData.CharacterData.CreatureSize;
 import charData.items.Fists;
@@ -44,10 +45,10 @@ public abstract class Character implements Serializable {
 		
 	}
 	
-	public abstract AbstractAction getNextAction(Arena field, Queue<Character> others, int moveDist, int actions,
+	public abstract AbstractAction getNextAction(Encounter field, Queue<Character> others, int moveDist, int actions,
 			int bonusActions, int interactions);
 	
-	public abstract Character[] getTargets(Arena field, int max);
+	public abstract Character[] getTargets(Encounter field, int max);
 
 	public void setStats(int str, int dex, int con, int intl, int wis, int cha, int speed, CharacterData.Class clss,
 			CharacterData.Race race, CharacterData.Align align, CharacterData.Style style, String name) {

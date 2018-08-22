@@ -6,6 +6,7 @@ import world.locations.Arena;
 import java.io.Serializable;
 
 import Main.Client;
+import Main.Encounter;
 import charData.Character;
 
 public abstract class Spell implements Serializable {
@@ -43,9 +44,9 @@ public abstract class Spell implements Serializable {
 		longCastTime = time;
 	}
 	
-	public abstract void cast(Arena field, int castLevel);
+	public abstract void cast(Encounter field, int castLevel);
 	
-	public void cast(Arena field) {
+	public void cast(Encounter field) {
 		Client.console.log("What level would you like to cast at? (minimum: " + level + ")", Client.DM_COLOR);
 		int castLevel = Client.console.readNum();
 		if (castLevel < level) {

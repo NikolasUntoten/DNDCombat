@@ -1,5 +1,6 @@
 package charData.magic;
 
+import Main.Encounter;
 import charData.Character;
 import world.locations.Arena;
 
@@ -26,7 +27,7 @@ public abstract class TargetSpell extends Spell {
 	
 	public abstract int maxTargets(int castLevel);
 	
-	public void cast(Arena field, int castLevel) {
+	public void cast(Encounter field, int castLevel) {
 		Character[] targets = caster.getTargets(field, maxTargets(castLevel));
 		cast(castLevel, targets);
 	}

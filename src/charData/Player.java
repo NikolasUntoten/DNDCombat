@@ -7,6 +7,7 @@ import java.util.Queue;
 
 import GUI.Translator;
 import Main.Client;
+import Main.Encounter;
 import actions.AbstractAction;
 import actions.Attack;
 import actions.Cast;
@@ -17,7 +18,7 @@ import world.locations.Arena;
 
 public class Player extends Character {
 	
-	public AbstractAction getNextAction(Arena field, Queue<Character> others, int moveDist, int actions,
+	public AbstractAction getNextAction(Encounter field, Queue<Character> others, int moveDist, int actions,
 			int bonusActions, int interactions) {
 		
 		Map<Translator.Actions, Boolean> available = new HashMap<Translator.Actions, Boolean>();
@@ -70,7 +71,7 @@ public class Player extends Character {
 		}
 	}
 
-	public Character[] getTargets(Arena field, int max) {
+	public Character[] getTargets(Encounter field, int max) {
 		Character[] targets = new Character[max];
 		List<Character> people = field.getPeople();
 		for (int i = 0; i < people.size(); i++) {

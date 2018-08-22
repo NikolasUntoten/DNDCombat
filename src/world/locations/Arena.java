@@ -10,6 +10,7 @@ import java.util.Queue;
 import GUI.BattleFieldViewer;
 import Main.CharacterCreator;
 import Main.Client;
+import Main.Encounter;
 import actions.AbstractAction;
 import actions.Attack;
 import actions.Cast;
@@ -86,38 +87,33 @@ public class Arena implements Location {
 		Client.console.log("You are now battling " + guy.toString(), Client.DM_COLOR);
 		Client.console.log("Input 'attack' to attack, anything else to quit.", Client.COMPUTER_COLOR);
 
-		list = new ArrayList<Character>();
+		List<Character> list = new ArrayList<Character>();
 		list.add(Client.hub.getPerson());
 		list.add(guy);
-		runBattle(list);
+		Encounter enc = new Encounter(generateRoom(list), list);
+		enc.run();
 
 		afterMath(Client.hub.getPerson(), guy);
 
 		Client.hub.changeLocation(new CityCenter());
 	}
 
-	public void runBattle(List<Character> list) {
-		
-	}
-
 	private Room generateRoom(List<Character> list) {
-		field = new Room(10, 10);
-		for (int i = 0; i < field.getWidth(); i++) {
-			field.addProp(new Wall(), i, 0);
-			field.addProp(new Wall(), i, field.getHeight() - 1);
+		Room r = new Room(10, 10);
+		for (int i = 0; i < r.getWidth(); i++) {
+			r.addProp(new Wall(), i, 0);
+			r.addProp(new Wall(), i, r.getHeight() - 1);
 		}
 		
-		for (int i = 1; i < field.getHeight() - 1; i++) {
-			field.addProp(new Wall(), 0, i);
-			field.addProp(new Wall(), field.getWidth() - 1, i);
+		for (int i = 1; i < r.getHeight() - 1; i++) {
+			r.addProp(new Wall(), 0, i);
+			r.addProp(new Wall(), r.getWidth() - 1, i);
 		}
 		for (Character c : list) {
-			field.addPerson(c);
+			r.addPerson(c);
 		}
-		return field;
+		return r;
 	}
-
-	
 	
 	private void afterMath(Character you, Character guy) {
 		if (you.isUnconcious()) {
@@ -139,7 +135,6 @@ public class Arena implements Location {
 	}
 
 	public void spoils(Character victor, Character failure) {
-
 		double percent = Math.random();
 		int cost = (int) (failure.getCopper() * percent);
 		failure.useCopper(cost);
@@ -157,32 +152,8 @@ public class Arena implements Location {
 		}
 	}
 
-	private void clearDead(Queue<Character> list) {
-		for (int i = 0; i < list.size(); i++) {
-			Character c = list.poll();
-			if (!c.isUnconcious()) {
-				list.add(c);
-			}
-		}
-	}
-
-	public boolean occupied(int x, int y) {
-		return field.occupied(x, y);
-	}
-
-	public List<Character> getPeople() {
-		if (list == null)
-			list = new ArrayList<Character>();
-		return list;
-	}
-	
-	public Point getSelectedPoint() {
-		return fieldView.getSelectedPoint();
-	}
-
 	@Override
 	public String toString() {
 		return "the Arena";
 	}
-
 }

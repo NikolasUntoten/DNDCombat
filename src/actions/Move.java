@@ -6,6 +6,7 @@ import world.locations.Arena;
 import java.awt.Point;
 
 import Main.Client;
+import Main.Encounter;
 
 public class Move implements AbstractAction {
 
@@ -15,16 +16,16 @@ public class Move implements AbstractAction {
 	private int distanceLeft;
 	private int initDist;
 	private String input;
-	Arena field;
+	Encounter field;
 
-	public Move(Arena a, Character c, int dist, String input) {
+	public Move(Encounter e, Character c, int dist, String input) {
 		focus = c;
 		deltaX = 0;
 		deltaY = 0;
 		distanceLeft = dist;
 		initDist = dist;
 		this.input = input;
-		field = a;
+		field = e;
 	}
 
 	@Override
