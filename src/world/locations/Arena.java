@@ -27,11 +27,6 @@ public class Arena implements Location {
 	
 	private final String[] acts = { "enter battle", "leave", "spectate" };
 
-	private Queue<Character> battleQueue;
-	private List<Character> list;
-	private BattleFieldViewer fieldView;
-	private Room field;
-
 	@Override
 	public String[] getActs() {
 		return acts;
@@ -101,32 +96,7 @@ public class Arena implements Location {
 	}
 
 	public void runBattle(List<Character> list) {
-		fieldView = new BattleFieldViewer(generateRoom(list), 200);
-		Client.display.addUtility(fieldView);
-
-		// sort the list based on initiative
-		if (list.size() > 1) {
-			list.sort(new Comparator<Character>() {
-				@Override
-				public int compare(Character c1, Character c2) {
-					return (int) Math.ceil(c1.getInitiative() - c2.getInitiative());
-				}
-			});
-		}
-
-		battleQueue = new LinkedList<Character>();
-		for (Character c : list) {
-			battleQueue.add(c);
-		}
-		while (battleQueue.size() > 1) {
-			Character current = battleQueue.poll();
-			Client.console.log("Beginning turn for: " + current + " (NPC:" + current.isNPC() + ").", Client.DM_COLOR);
-			takeTurn(current);
-			battleQueue.add(current);
-		}
-
-		Client.console.log(battleQueue.poll() + " has won the battle!", Client.DM_COLOR);
-		Client.display.remove(fieldView);
+		
 	}
 
 	private Room generateRoom(List<Character> list) {
@@ -146,49 +116,7 @@ public class Arena implements Location {
 		return field;
 	}
 
-	private void takeTurn(Character focus) {
-		int moveDist, actions, bonusActions;
-
-		moveDist = focus.getSpeed();
-		actions = focus.getActions();
-		bonusActions = focus.getBonusActions();
-		int interactions = 1;
-		boolean endingTurn = false;
-
-		while ((moveDist > 0 || actions > 0 || bonusActions > 0) && !endingTurn && battleQueue.size() > 0) {
-			AbstractAction action = focus.getNextAction(this, battleQueue, moveDist, actions, bonusActions,
-					interactions);
-			if (action instanceof Attack) {
-				actions--;
-			} else if (action instanceof PassTurn) {
-				endingTurn = true;
-			}
-
-			if (action != null) {
-				action.performAction();
-			}
-
-			if (action instanceof Move) {
-				int dist = ((Move) action).getDistance();
-				moveDist -= dist;
-			}
-
-			if (action instanceof Draw) {
-				interactions--;
-			}
-			
-			if (action instanceof Cast) {
-				//figure stuff out
-			}
-
-			clearDead(battleQueue);
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+	
 	
 	private void afterMath(Character you, Character guy) {
 		if (you.isUnconcious()) {
